@@ -3,8 +3,9 @@ import io
 import numpy as np
 import tensorflow as tf
 from flask import Flask, jsonify, request
-from tensorflow.keras.applications.resnet50 import preprocess_input
-from tensorflow.keras.models import load_model
+from keras.applications.resnet50 import preprocess_input
+from keras.models import load_model
+from keras.preprocessing.image import img_to_array, array_to_img
 from PIL import Image
 import matplotlib.pyplot as plt
 from flask_cors import CORS
@@ -35,7 +36,7 @@ def preprocess_image_from_bytes(image_bytes, target_size):
     if img.mode != "RGB":
         img = img.convert("RGB")
     img = img.resize(target_size)
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img_array = img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)
     return img_array
@@ -57,13 +58,13 @@ def display_gradcam(img, heatmap, predicted_class, explainer, alpha=0.4):
     jet_heatmap = jet_colors[heatmap]
 
     # Create an image with RGB colorized heatmap
-    jet_heatmap = tf.keras.preprocessing.image.array_to_img(jet_heatmap)
+    jet_heatmap = array_to_img(jet_heatmap)
     jet_heatmap = jet_heatmap.resize((img.shape[1], img.shape[0]))
-    jet_heatmap = tf.keras.preprocessing.image.img_to_array(jet_heatmap)
+    jet_heatmap = img_to_array(jet_heatmap)
 
     # Superimpose the heatmap on original image
     superimposed_img = jet_heatmap * alpha + img
-    superimposed_img = tf.keras.preprocessing.image.array_to_img(superimposed_img)
+    superimposed_img = array_to_img(superimposed_img)
 
     return superimposed_img
 

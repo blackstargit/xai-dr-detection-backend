@@ -4,7 +4,7 @@ from scripts.xai import (
     make_gradcam_heatmap,
     display_gradcam,
 )
-from testing.resnet50 import load_resnet_model
+from scripts.resnet50 import load_resnet_model
 import numpy as np
 
 # Configuration

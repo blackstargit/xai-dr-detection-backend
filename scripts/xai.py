@@ -1,5 +1,7 @@
 import tensorflow as tf
-from tensorflow.keras.applications.resnet50 import preprocess_input
+from keras.applications.resnet50 import preprocess_input
+from keras.models import Model
+from keras.preprocessing.image import load_img, img_to_array, array_to_img
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -9,8 +11,8 @@ from scripts.nlp import DiabeticRetinopathyExplainer
 
 # --- 5. Preprocessing Function for a Single Image ---
 def preprocess_image_for_inference(image_path, image_size):
-    img = tf.keras.preprocessing.image.load_img(image_path, target_size=image_size)
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img = load_img(image_path, target_size=image_size)
+    img_array = img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)  # Use ResNet50 preprocess_input
     return img_array
@@ -18,7 +20,7 @@ def preprocess_image_for_inference(image_path, image_size):
 
 # --- 6. Grad-CAM Implementation ---
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
-    grad_model = tf.keras.models.Model(
+    grad_model = Model(
         [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
     )
 
@@ -53,11 +55,11 @@ def display_gradcam(img_path, heatmap, predicted_class, alpha=0.4):
     jet = plt.colormaps.get_cmap("jet")
     jet_colors = jet(np.arange(256))[:, :3]
     jet_heatmap = jet_colors[heatmap]
-    jet_heatmap = tf.keras.preprocessing.image.array_to_img(jet_heatmap)
+    jet_heatmap = array_to_img(jet_heatmap)
     jet_heatmap = jet_heatmap.resize((img.shape[1], img.shape[0]))
-    jet_heatmap = tf.keras.preprocessing.image.img_to_array(jet_heatmap)
+    jet_heatmap = img_to_array(jet_heatmap)
     superimposed_img = jet_heatmap * alpha + img
-    superimposed_img = tf.keras.preprocessing.image.array_to_img(superimposed_img)
+    superimposed_img = array_to_img(superimposed_img)
 
     # Display Grad CAM
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))

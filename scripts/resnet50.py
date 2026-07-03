@@ -1,10 +1,13 @@
 import os
-from tensorflow.keras.applications.resnet50 import ResNet50
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
-from tensorflow.keras.models import Model, load_model
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.applications.resnet50 import ResNet50
+# ImageDataGenerator was removed from Keras 3's public API; it only survives
+# through this legacy compat path (what tensorflow.keras resolves to at
+# runtime, but statically resolvable here since it's a real module).
+from keras._tf_keras.keras.preprocessing.image import ImageDataGenerator
+from keras.layers import Dense, GlobalAveragePooling2D
+from keras.models import Model, load_model
+from keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 
 def list_files(startpath):
